@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Colors</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h1>プレイヤー設定</h1>
+    <p>プレイヤーを追加してください</p>
+    <input type="text" id="playerInput" placeholder="名前を入力">
+    <button id="addPlayerBtn">追加</button>
+    <ol id="playerList"></ol>
+    <!-- <button id="returnBtn">戻る</button> -->
+    <button id="settingCompleteBtn">設定完了</button>
+
+<script>
+    const minPlayerNum = 2;
+
+    //ローカルストレージにあれば読み込む。無ければ空配列
+    let players = JSON.parse(localStorage.getItem("players") || "[]"); 
+
+    renderPlayersList();
+
+    function renderPlayersList(){
+        const $playerList = document.getElementById("playerList");
+        $playerList.innerHTML = ""; //一旦リストをクリア
+
+        players.forEach((name, index) => {
+            //名前生成
+            const $li = document.createElement("li");
+            $li.textContent = name;
+
+            //×ボタン生成
+            const $delBtn = document.createElement("button");
+            $delBtn.textContent = "×";
+            $delBtn.classList.add("delBtn");
+
+            //×ボタン処理
+            $delBtn.addEventListener("click", () => {
+                players.splice(index, 1);
+                renderPlayersList();
+            });
+
+            $li.appendChild($delBtn);   //名前の後ろに×ボタンを追加
+            $playerList.appendChild($li); //リストに名前,×ボタンを追加
+        });
+    }
+
+    //プレイヤー追加
+    const $addPlayer = document.getElementById("addPlayerBtn");
+    $addPlayer.addEventListener("click", () => {
+        const name = document.getElementById("playerInput").value.trim();
+        if (!name) return; //名前が入力されていなければこのコードから抜け出す
+        //配列にプレイヤーを追加
+        players.push(name); 
+        document.getElementById("playerInput").value = "";  //入力欄をクリア
+        renderPlayersList();
+    });
+
+    //戻る
+//    const $return = document.getElementById("returnBtn");
+//    $return.addEventListener("click", () => {
+//          location.href = "index.html";
+//    });
+
+    //設定完了
+    const $settingComplete = document.getElementById("settingCompleteBtn");
+    $settingComplete.addEventListener("click", () => {
+        if(players.length < minPlayerNum){
+            alert("２人以上プレイヤーを追加してください");
+            return;
+        }else{
+            localStorage.setItem("players", JSON.stringify(players));
+            location.href = "index.html";
+        }
+    });
+
+</script>
+
+</body>
+</html>

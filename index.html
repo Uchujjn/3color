@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Colors</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <h1>いろち</h1>
+    <p>プレイヤー設定をしてからゲームを始めてください</p>
+    <button id="startBtn">START</button>
+    <button id="settingBtn">プレイヤー設定</button>
+<script>
+    const $startBtn = document.getElementById("startBtn");
+    const $settingBtn = document.getElementById("settingBtn");
+    const players = JSON.parse(localStorage.getItem("players") || "[]");
+    const minPlayerNum = 2;
+
+    $startBtn.addEventListener('click', () => {
+        if(players.length >= 2){
+            location.href = "game.html";
+        }else{
+            alert("プレイヤー設定をしてください(最低２名)")
+        }
+         
+    });
+
+    $settingBtn.addEventListener('click', () => {
+        location.href = "setting.html";
+    });
+    
+</script>
+</body>
+</html>

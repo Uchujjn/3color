@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3-Colors</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+    <img id="fieldCard" src="/cards/field.png">
+    <img id="deckCard" src="/cards/back.png">
+    <div class="cardNum" id="fieldNumber">場札の枚数</div>
+    <div class="cardNum" id="deckNumber">山札の枚数</div>
+    <h2>獲得ポイント</h2>
+    <div id="pointsList">プレイヤー：〇点</div>
+    <div id="finish"></div>
+
+<script>
+    const colorPallet = ["#ff8080", "#8280ff","#fdff80"];
+    const numberOfCards = 36;   //カードの枚数
+    let cardsOrder = [];    //カードの順番
+    let fieldNumber = 0;    //場札の枚数
+    let deckNumber = numberOfCards;     //デッキの枚数
+    let players = JSON.parse(localStorage.getItem("players"));  //プレイヤー
+    let playerPoints = new Array(players.length).fill(0);   //獲得ポイント
+
+    //背景色を決定
+    function selectBackgroundColor (){
+        const backgroundColor = colorPallet[Math.floor(Math.random() * colorPallet.length)];
+        document.body.style.backgroundColor = backgroundColor;
+    }
+
+    //カードをシャッフル
+    function shuffleCards(){
+        while(cardsOrder.length < numberOfCards){
+            let num = Math.floor(Math.random()*numberOfCards) + 1;
+            let numStr = String(num).padStart(2, "0");
+            if(!cardsOrder.includes(numStr)){
+                cardsOrder.push(numStr);
+            }
+        }
+        console.log(cardsOrder);
+    }
+
+    //場札と山札の枚数を更新
+    function updateNumber(){
+        const $fieldNumber = document.getElementById("fieldNumber");
+        const $deckNumber = document.getElementById("deckNumber");
+
+        $fieldNumber.textContent = "場札の枚数" + "\n" + fieldNumber + "枚";
+        $deckNumber.textContent = "山札の枚数" + "\n" + deckNumber + "枚"; 
+    }
+
+    //各プレイヤーのポイントを更新
+    function updatePointsList(){
+        const $pointsList = document.getElementById("pointsList");
+        $pointsList.innerHTML = "";
+
+        players.forEach((name, index) => {
+            //プレイヤー名とポイントを生成
+            const $div = document.createElement("div");
+            $div.textContent = name + "：" + playerPoints[index] + "点" + " ";
+
+            //＋、－ボタンを生成
+            const $plusBtn = document.createElement("button");
+            const $minusBtn = document.createElement("button");
+            $plusBtn.textContent = "＋";
+            $minusBtn.textContent = "－";
+            $plusBtn.classList.add("pointsBtn");
+            $minusBtn.classList.add("pointsBtn");
+
+            //＋ボタン処理
+            $plusBtn.addEventListener("click", () => {
+                playerPoints[index] += fieldNumber;
+                fieldNumber = 0;
+                document.getElementById("fieldCard").src = "./cards/field.png";
+                updatePointsList();
+                updateNumber();
+            });
+
+            //－ボタン処理
+            $minusBtn.addEventListener("click", () => {
+                playerPoints[index] -= 1;
+                if(playerPoints[index] < 0){
+                    playerPoints[index] = 0;
+                }
+                updatePointsList();
+                updateNumber();
+            });
+
+            //表示を更新
+            $div.appendChild($plusBtn)
+            $div.appendChild($minusBtn);
+            $pointsList.appendChild($div);
+        });
+    }
+
+    //カードをめくる処理
+    let index = 0;
+    function turnCard(){ 
+        let cardsrc = "./cards/card" + cardsOrder[index] + ".png";
+        document.getElementById("fieldCard").src = cardsrc;
+        index++;
+        fieldNumber++;
+        deckNumber--;
+        //ゲーム終了時の処理
+        if(deckNumber === 0){
+            document.getElementById("deckCard").src = "./cards/non_deck.png";
+            finishGame();
+        }
+    }
+
+    //ゲーム終了処理
+    function finishGame(){
+        const $finish = document.getElementById("finish");
+        //$finish.innerHTML = "";
+
+        const $restart = document.createElement("button");
+        const $endGame = document.createElement("button");
+
+        $restart.classList.add("resetBtn");
+        $endGame.classList.add("resetBtn");
+
+        $restart.textContent = "もう一度";
+        $endGame.textContent = "終了";
+
+        $finish.appendChild($restart); 
+        $finish.appendChild($endGame);
+
+        $restart.addEventListener("click", () => {
+            location.href = "game.html";
+        });
+
+        $endGame.addEventListener("click", () => {
+            localStorage.clear();
+            location.href = "index.html";
+        });
+    }
+
+    selectBackgroundColor();
+    shuffleCards();
+    updateNumber();
+    updatePointsList();
+    document.getElementById("deckCard").addEventListener('click', () => {
+        if(deckNumber > 0){
+            turnCard();
+            updateNumber();
+        }
+    });
+    
+</script>
+</body>
+</html>
