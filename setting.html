@@ -11,7 +11,7 @@
     <p>プレイヤーを追加してください</p>
     <input type="text" id="playerInput" placeholder="名前を入力">
     <button id="addPlayerBtn">追加</button>
-    <ol id="playerList"></ol>
+    <div id="playerList"></div>
     <!-- <button id="returnBtn">戻る</button> -->
     <button id="settingCompleteBtn">設定完了</button>
 
@@ -29,8 +29,8 @@
 
         players.forEach((name, index) => {
             //名前生成
-            const $li = document.createElement("li");
-            $li.textContent = name;
+            const $div = document.createElement("div");
+            $div.textContent = name;
 
             //×ボタン生成
             const $delBtn = document.createElement("button");
@@ -43,8 +43,8 @@
                 renderPlayersList();
             });
 
-            $li.appendChild($delBtn);   //名前の後ろに×ボタンを追加
-            $playerList.appendChild($li); //リストに名前,×ボタンを追加
+            $div.appendChild($delBtn);   //名前の後ろに×ボタンを追加
+            $playerList.appendChild($div); //リストに名前,×ボタンを追加
         });
     }
 
